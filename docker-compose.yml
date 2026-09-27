@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: asset_care_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-assetcare}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-assetcare_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-assetcare_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-assetcare} -d ${POSTGRES_DB:-assetcare_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: asset_care_api
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - ./:/app
+      - /app/.venv
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://${POSTGRES_USER:-assetcare}:${POSTGRES_PASSWORD:-assetcare_secret}@db:5432/${POSTGRES_DB:-assetcare_db}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - CORS_ORIGINS=${CORS_ORIGINS:-*}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

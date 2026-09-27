@@ -1,0 +1,1709 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Asset Care API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/assets/": {
+      "get": {
+        "tags": [
+          "Assets"
+        ],
+        "summary": "List Assets",
+        "description": "List active physical assets with optional category filtering and pagination.",
+        "operationId": "list_assets_api_v1_assets__get",
+        "parameters": [
+          {
+            "name": "asset_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AssetType"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by asset category",
+              "title": "Asset Type"
+            },
+            "description": "Filter by asset category"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AssetResponse"
+                  },
+                  "title": "Response List Assets Api V1 Assets  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Assets"
+        ],
+        "summary": "Create Asset",
+        "description": "Create a new asset with dynamic JSONB metadata validation.\n\nAccepts an optional client-generated UUID for offline-first creation.",
+        "operationId": "create_asset_api_v1_assets__post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets/{asset_id}": {
+      "get": {
+        "tags": [
+          "Assets"
+        ],
+        "summary": "Get Asset",
+        "description": "Retrieve an asset by its UUID.",
+        "operationId": "get_asset_api_v1_assets__asset_id__get",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Assets"
+        ],
+        "summary": "Update Asset",
+        "description": "Update asset fields and re-validate dynamic telemetry/metadata.",
+        "operationId": "update_asset_api_v1_assets__asset_id__put",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Assets"
+        ],
+        "summary": "Delete Asset",
+        "description": "Soft-delete an asset, preserving tombstone for offline sync replication.",
+        "operationId": "delete_asset_api_v1_assets__asset_id__delete",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets/{asset_id}/health": {
+      "get": {
+        "tags": [
+          "Assets"
+        ],
+        "summary": "Get Asset Health",
+        "description": "Compute and return preventive maintenance health status across all configured rules.",
+        "operationId": "get_asset_health_api_v1_assets__asset_id__health_get",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetHealthReport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/maintenance/rules": {
+      "post": {
+        "tags": [
+          "Maintenance"
+        ],
+        "summary": "Create Rule",
+        "description": "Create a new preventive maintenance threshold rule for an asset.",
+        "operationId": "create_rule_api_v1_maintenance_rules_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaintenanceRuleCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceRuleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/maintenance/rules/asset/{asset_id}": {
+      "get": {
+        "tags": [
+          "Maintenance"
+        ],
+        "summary": "Get Rules For Asset",
+        "description": "Retrieve all active maintenance rules configured for an asset.",
+        "operationId": "get_rules_for_asset_api_v1_maintenance_rules_asset__asset_id__get",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MaintenanceRuleResponse"
+                  },
+                  "title": "Response Get Rules For Asset Api V1 Maintenance Rules Asset  Asset Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/maintenance/rules/{rule_id}": {
+      "delete": {
+        "tags": [
+          "Maintenance"
+        ],
+        "summary": "Delete Rule",
+        "description": "Soft-delete a maintenance rule.",
+        "operationId": "delete_rule_api_v1_maintenance_rules__rule_id__delete",
+        "parameters": [
+          {
+            "name": "rule_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Rule Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/maintenance/logs": {
+      "post": {
+        "tags": [
+          "Maintenance"
+        ],
+        "summary": "Record Service Log",
+        "description": "Record an executed maintenance service log for an asset.",
+        "operationId": "record_service_log_api_v1_maintenance_logs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaintenanceLogCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceLogResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/maintenance/logs/asset/{asset_id}": {
+      "get": {
+        "tags": [
+          "Maintenance"
+        ],
+        "summary": "Get Logs For Asset",
+        "description": "Retrieve service history for an asset, ordered by service date descending.",
+        "operationId": "get_logs_for_asset_api_v1_maintenance_logs_asset__asset_id__get",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MaintenanceLogResponse"
+                  },
+                  "title": "Response Get Logs For Asset Api V1 Maintenance Logs Asset  Asset Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/maintenance/logs/{log_id}": {
+      "delete": {
+        "tags": [
+          "Maintenance"
+        ],
+        "summary": "Delete Log",
+        "description": "Soft-delete a maintenance service log.",
+        "operationId": "delete_log_api_v1_maintenance_logs__log_id__delete",
+        "parameters": [
+          {
+            "name": "log_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Log Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sync/pull": {
+      "get": {
+        "tags": [
+          "Sync"
+        ],
+        "summary": "Sync Pull",
+        "description": "Deliver all assets, rules, and logs modified or deleted since the provided timestamp.\n\nIntent:\n    Enables incremental delta downloads. Soft-deleted records are included\n    so the mobile SQLite database can apply local deletions.",
+        "operationId": "sync_pull_api_v1_sync_pull_get",
+        "parameters": [
+          {
+            "name": "since",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "description": "UTC timestamp of the client's last successful synchronization",
+              "title": "Since"
+            },
+            "description": "UTC timestamp of the client's last successful synchronization"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncPullResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sync/push": {
+      "post": {
+        "tags": [
+          "Sync"
+        ],
+        "summary": "Sync Push",
+        "description": "Reconcile offline-created or modified mutations using Last-Write-Wins strategy.\n\nIntent:\n    Processes mutations submitted by the client while disconnected.\n    Uses client-generated UUIDs to ensure seamless identity persistence across SQLite and PostgreSQL.",
+        "operationId": "sync_push_api_v1_sync_push_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncPushRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncPushResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Health Check",
+        "description": "Health check endpoint to verify API availability and environment.",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Check Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AssetCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "description": "Asset display name"
+          },
+          "asset_type": {
+            "$ref": "#/components/schemas/AssetType",
+            "description": "Classification of the asset"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Optional notes or details"
+          },
+          "metadata_payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata Payload",
+            "description": "Category-specific dynamic attributes"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id",
+            "description": "Optional client-generated UUIDv4 (for offline-first creation)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "asset_type"
+        ],
+        "title": "AssetCreate",
+        "description": "Payload to create an asset; accepts an optional client-generated UUID for offline creation."
+      },
+      "AssetHealthReport": {
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Asset Id"
+          },
+          "asset_name": {
+            "type": "string",
+            "title": "Asset Name"
+          },
+          "overall_status": {
+            "$ref": "#/components/schemas/MaintenanceStatus"
+          },
+          "rules_count": {
+            "type": "integer",
+            "title": "Rules Count"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceHealthItem"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "asset_id",
+          "asset_name",
+          "overall_status",
+          "rules_count",
+          "items"
+        ],
+        "title": "AssetHealthReport",
+        "description": "Comprehensive health summary for an asset across all its rules."
+      },
+      "AssetResponse": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "description": "Asset display name"
+          },
+          "asset_type": {
+            "$ref": "#/components/schemas/AssetType",
+            "description": "Classification of the asset"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Optional notes or details"
+          },
+          "metadata_payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata Payload",
+            "description": "Category-specific dynamic attributes"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "is_deleted": {
+            "type": "boolean",
+            "title": "Is Deleted"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "asset_type",
+          "id",
+          "created_at",
+          "updated_at",
+          "is_deleted"
+        ],
+        "title": "AssetResponse",
+        "description": "Response DTO for an asset."
+      },
+      "AssetType": {
+        "type": "string",
+        "enum": [
+          "vehicle",
+          "hvac",
+          "appliance",
+          "other"
+        ],
+        "title": "AssetType",
+        "description": "Categorization of supported asset classes."
+      },
+      "AssetUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "asset_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AssetType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "metadata_payload": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata Payload"
+          }
+        },
+        "type": "object",
+        "title": "AssetUpdate",
+        "description": "Payload to update an asset; all fields optional."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "MaintenanceHealthItem": {
+        "properties": {
+          "rule_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Rule Id"
+          },
+          "maintenance_type": {
+            "type": "string",
+            "title": "Maintenance Type"
+          },
+          "metric_type": {
+            "$ref": "#/components/schemas/MetricType"
+          },
+          "interval_value": {
+            "type": "number",
+            "title": "Interval Value"
+          },
+          "metric_unit": {
+            "type": "string",
+            "title": "Metric Unit"
+          },
+          "current_reading": {
+            "type": "number",
+            "title": "Current Reading",
+            "description": "Current odometer or elapsed days/months"
+          },
+          "last_service_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Service Date"
+          },
+          "last_service_metric": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Service Metric"
+          },
+          "remaining_value": {
+            "type": "number",
+            "title": "Remaining Value",
+            "description": "Remaining units before maintenance is due"
+          },
+          "percentage_used": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Percentage Used",
+            "description": "Percentage of interval consumed (e.g. 95.0%)"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MaintenanceStatus"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rule_id",
+          "maintenance_type",
+          "metric_type",
+          "interval_value",
+          "metric_unit",
+          "current_reading",
+          "remaining_value",
+          "percentage_used",
+          "status"
+        ],
+        "title": "MaintenanceHealthItem",
+        "description": "Health item describing the status of a specific maintenance rule."
+      },
+      "MaintenanceLogCreate": {
+        "properties": {
+          "maintenance_type": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Maintenance Type",
+            "description": "e.g. oil_change, filter_swap"
+          },
+          "service_date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Service Date",
+            "description": "UTC timestamp or ISO date of service execution"
+          },
+          "metric_value_at_service": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric Value At Service",
+            "description": "Odometer or usage hours at service time"
+          },
+          "cost": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,2}0*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost",
+            "description": "Service cost"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes",
+            "description": "Observations, parts replaced"
+          },
+          "performed_by": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Performed By",
+            "description": "Technician or workshop name"
+          },
+          "asset_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Asset Id",
+            "description": "Target asset UUID"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id",
+            "description": "Optional client-generated UUIDv4 (for offline-first creation)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "maintenance_type",
+          "service_date",
+          "asset_id"
+        ],
+        "title": "MaintenanceLogCreate",
+        "description": "Payload to record an executed maintenance log."
+      },
+      "MaintenanceLogResponse": {
+        "properties": {
+          "maintenance_type": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Maintenance Type",
+            "description": "e.g. oil_change, filter_swap"
+          },
+          "service_date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Service Date",
+            "description": "UTC timestamp or ISO date of service execution"
+          },
+          "metric_value_at_service": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric Value At Service",
+            "description": "Odometer or usage hours at service time"
+          },
+          "cost": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,2}0*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost",
+            "description": "Service cost"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes",
+            "description": "Observations, parts replaced"
+          },
+          "performed_by": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Performed By",
+            "description": "Technician or workshop name"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "asset_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Asset Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "is_deleted": {
+            "type": "boolean",
+            "title": "Is Deleted"
+          }
+        },
+        "type": "object",
+        "required": [
+          "maintenance_type",
+          "service_date",
+          "id",
+          "asset_id",
+          "created_at",
+          "updated_at",
+          "is_deleted"
+        ],
+        "title": "MaintenanceLogResponse",
+        "description": "Response DTO for an executed maintenance log."
+      },
+      "MaintenanceRuleCreate": {
+        "properties": {
+          "maintenance_type": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Maintenance Type",
+            "description": "e.g. oil_change, air_filter"
+          },
+          "metric_type": {
+            "$ref": "#/components/schemas/MetricType",
+            "description": "Trigger metric: odometer, time_days, time_months, usage_hours"
+          },
+          "interval_value": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Interval Value",
+            "description": "Numerical interval (e.g. 5000, 180, 6)"
+          },
+          "metric_unit": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 1,
+            "title": "Metric Unit",
+            "description": "Measurement unit (e.g. km, mi, months)"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Optional service notes"
+          },
+          "asset_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Asset Id",
+            "description": "Target asset UUID"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id",
+            "description": "Optional client-generated UUIDv4 (for offline-first creation)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "maintenance_type",
+          "metric_type",
+          "interval_value",
+          "metric_unit",
+          "asset_id"
+        ],
+        "title": "MaintenanceRuleCreate",
+        "description": "Payload to create a maintenance rule for an asset."
+      },
+      "MaintenanceRuleResponse": {
+        "properties": {
+          "maintenance_type": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Maintenance Type",
+            "description": "e.g. oil_change, air_filter"
+          },
+          "metric_type": {
+            "$ref": "#/components/schemas/MetricType",
+            "description": "Trigger metric: odometer, time_days, time_months, usage_hours"
+          },
+          "interval_value": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Interval Value",
+            "description": "Numerical interval (e.g. 5000, 180, 6)"
+          },
+          "metric_unit": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 1,
+            "title": "Metric Unit",
+            "description": "Measurement unit (e.g. km, mi, months)"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Optional service notes"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "asset_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Asset Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "is_deleted": {
+            "type": "boolean",
+            "title": "Is Deleted"
+          }
+        },
+        "type": "object",
+        "required": [
+          "maintenance_type",
+          "metric_type",
+          "interval_value",
+          "metric_unit",
+          "id",
+          "asset_id",
+          "created_at",
+          "updated_at",
+          "is_deleted"
+        ],
+        "title": "MaintenanceRuleResponse",
+        "description": "Response DTO for a maintenance rule."
+      },
+      "MaintenanceStatus": {
+        "type": "string",
+        "enum": [
+          "ok",
+          "due_soon",
+          "overdue"
+        ],
+        "title": "MaintenanceStatus",
+        "description": "Calculated health status of an asset's maintenance task."
+      },
+      "MetricType": {
+        "type": "string",
+        "enum": [
+          "odometer",
+          "time_days",
+          "time_months",
+          "usage_hours"
+        ],
+        "title": "MetricType",
+        "description": "Types of metrics used to trigger maintenance thresholds."
+      },
+      "SyncAssetItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "asset_type": {
+            "$ref": "#/components/schemas/AssetType"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "metadata_payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata Payload"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "is_deleted": {
+            "type": "boolean",
+            "title": "Is Deleted",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "asset_type",
+          "updated_at"
+        ],
+        "title": "SyncAssetItem",
+        "description": "Asset mutation item submitted during push."
+      },
+      "SyncLogItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "asset_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Asset Id"
+          },
+          "maintenance_type": {
+            "type": "string",
+            "title": "Maintenance Type"
+          },
+          "service_date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Service Date"
+          },
+          "metric_value_at_service": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric Value At Service"
+          },
+          "cost": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "performed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Performed By"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "is_deleted": {
+            "type": "boolean",
+            "title": "Is Deleted",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "asset_id",
+          "maintenance_type",
+          "service_date",
+          "updated_at"
+        ],
+        "title": "SyncLogItem",
+        "description": "Maintenance log mutation item submitted during push."
+      },
+      "SyncPullResponse": {
+        "properties": {
+          "synced_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Synced At"
+          },
+          "assets": {
+            "items": {
+              "$ref": "#/components/schemas/AssetResponse"
+            },
+            "type": "array",
+            "title": "Assets"
+          },
+          "maintenance_rules": {
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceRuleResponse"
+            },
+            "type": "array",
+            "title": "Maintenance Rules"
+          },
+          "maintenance_logs": {
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceLogResponse"
+            },
+            "type": "array",
+            "title": "Maintenance Logs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "synced_at",
+          "assets",
+          "maintenance_rules",
+          "maintenance_logs"
+        ],
+        "title": "SyncPullResponse",
+        "description": "Payload sent to mobile client containing all entities modified since request timestamp."
+      },
+      "SyncPushRequest": {
+        "properties": {
+          "assets": {
+            "items": {
+              "$ref": "#/components/schemas/SyncAssetItem"
+            },
+            "type": "array",
+            "title": "Assets"
+          },
+          "maintenance_rules": {
+            "items": {
+              "$ref": "#/components/schemas/SyncRuleItem"
+            },
+            "type": "array",
+            "title": "Maintenance Rules"
+          },
+          "maintenance_logs": {
+            "items": {
+              "$ref": "#/components/schemas/SyncLogItem"
+            },
+            "type": "array",
+            "title": "Maintenance Logs"
+          }
+        },
+        "type": "object",
+        "title": "SyncPushRequest",
+        "description": "Batch mutation payload uploaded by the mobile client."
+      },
+      "SyncPushResponse": {
+        "properties": {
+          "synced_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Synced At"
+          },
+          "applied_assets": {
+            "type": "integer",
+            "title": "Applied Assets"
+          },
+          "applied_rules": {
+            "type": "integer",
+            "title": "Applied Rules"
+          },
+          "applied_logs": {
+            "type": "integer",
+            "title": "Applied Logs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "synced_at",
+          "applied_assets",
+          "applied_rules",
+          "applied_logs"
+        ],
+        "title": "SyncPushResponse",
+        "description": "Confirmation payload returned after processing sync mutations."
+      },
+      "SyncRuleItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "asset_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Asset Id"
+          },
+          "maintenance_type": {
+            "type": "string",
+            "title": "Maintenance Type"
+          },
+          "metric_type": {
+            "$ref": "#/components/schemas/MetricType"
+          },
+          "interval_value": {
+            "type": "number",
+            "title": "Interval Value"
+          },
+          "metric_unit": {
+            "type": "string",
+            "title": "Metric Unit"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "is_deleted": {
+            "type": "boolean",
+            "title": "Is Deleted",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "asset_id",
+          "maintenance_type",
+          "metric_type",
+          "interval_value",
+          "metric_unit",
+          "updated_at"
+        ],
+        "title": "SyncRuleItem",
+        "description": "Maintenance rule mutation item submitted during push."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
