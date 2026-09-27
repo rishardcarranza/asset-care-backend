@@ -7,6 +7,7 @@ class AssetType(str, Enum):
     """Categorization of supported asset classes."""
 
     VEHICLE = "vehicle"
+    MOTORCYCLE = "motorcycle"
     HVAC = "hvac"
     APPLIANCE = "appliance"
     OTHER = "other"

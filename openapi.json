@@ -850,6 +850,7 @@
         "type": "string",
         "enum": [
           "vehicle",
+          "motorcycle",
           "hvac",
           "appliance",
           "other"

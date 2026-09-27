@@ -9,6 +9,7 @@ from app.schemas.asset import (
 from app.schemas.dynamic_metadata import (
     ApplianceMetadata,
     HVACMetadata,
+    MotorcycleMetadata,
     OtherMetadata,
     VehicleMetadata,
     validate_metadata_payload,
@@ -37,6 +38,7 @@ __all__ = [
     "MetricType",
     "MaintenanceStatus",
     "VehicleMetadata",
+    "MotorcycleMetadata",
     "HVACMetadata",
     "ApplianceMetadata",
     "OtherMetadata",

@@ -27,6 +27,48 @@ class VehicleMetadata(BaseModel):
     transmission: str | None = Field(default=None, description="Manual or Automatic")
 
 
+class MotorcycleMetadata(BaseModel):
+    """Metadata schema for motorcycles, scooters, and mopeds."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    displacement_cc: int | None = Field(
+        default=None,
+        gt=0,
+        description="Engine displacement in cubic centimeters (e.g. 250, 650)",
+    )
+    drive_type: str = Field(
+        default="chain",
+        pattern="^(chain|belt|shaft)$",
+        description="Final drive mechanism: chain, belt, or shaft",
+    )
+    cooling_type: str = Field(
+        default="air",
+        pattern="^(air|liquid|oil)$",
+        description="Engine cooling mechanism: air, liquid, or oil",
+    )
+    engine: str | None = Field(
+        default=None, description="Engine model or architecture (e.g. Single, Twin, Inline-4)"
+    )
+    oil_type: str | None = Field(
+        default=None, description="Motorcycle oil grade (e.g. 10W-40 JASO MA2)"
+    )
+    last_odometer: float = Field(
+        default=0.0,
+        ge=0.0,
+        description="Last recorded odometer reading",
+    )
+    odometer_unit: str = Field(
+        default="km",
+        pattern="^(km|mi)$",
+        description="Distance measurement unit",
+    )
+    vin: str | None = Field(default=None, description="Vehicle Identification Number")
+    transmission: str | None = Field(
+        default=None, description="Transmission type (e.g. 6-speed, Automatic)"
+    )
+
+
 class HVACMetadata(BaseModel):
     """Metadata schema for heating, ventilation, and air conditioning."""
 
@@ -64,6 +106,7 @@ class OtherMetadata(BaseModel):
 
 METADATA_MODEL_MAP: dict[AssetType, type[BaseModel]] = {
     AssetType.VEHICLE: VehicleMetadata,
+    AssetType.MOTORCYCLE: MotorcycleMetadata,
     AssetType.HVAC: HVACMetadata,
     AssetType.APPLIANCE: ApplianceMetadata,
     AssetType.OTHER: OtherMetadata,

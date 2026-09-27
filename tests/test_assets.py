@@ -36,6 +36,35 @@ def test_create_vehicle_with_dynamic_metadata(client: TestClient) -> None:
     assert data["is_deleted"] is False
 
 
+def test_create_motorcycle_with_dynamic_metadata(client: TestClient) -> None:
+    """Verify creating a motorcycle persists specialized motorcycle metadata."""
+    payload = {
+        "name": "Yamaha MT-07",
+        "asset_type": "motorcycle",
+        "description": "689cc naked sport bike",
+        "metadata_payload": {
+            "displacement_cc": 689,
+            "drive_type": "chain",
+            "cooling_type": "liquid",
+            "engine": "CP2 Parallel-Twin",
+            "oil_type": "10W-40 JASO MA2",
+            "last_odometer": 12500,
+            "odometer_unit": "km",
+            "transmission": "6-speed",
+        },
+    }
+    response = client.post("/api/v1/assets/", json=payload)
+    assert response.status_code == 201
+    data = response.json()
+    assert data["name"] == "Yamaha MT-07"
+    assert data["asset_type"] == "motorcycle"
+    assert data["metadata_payload"]["displacement_cc"] == 689
+    assert data["metadata_payload"]["drive_type"] == "chain"
+    assert data["metadata_payload"]["cooling_type"] == "liquid"
+    assert data["metadata_payload"]["oil_type"] == "10W-40 JASO MA2"
+    assert data["metadata_payload"]["last_odometer"] == 12500.0
+
+
 def test_get_asset_lifecycle(client: TestClient) -> None:
     """Verify GET, UPDATE and DELETE on an asset."""
     # Create asset
