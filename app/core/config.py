@@ -1,5 +1,6 @@
 """Application configuration settings."""
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,13 +20,22 @@ class Settings(BaseSettings):
 
     POSTGRES_USER: str = "assetcare"
     POSTGRES_PASSWORD: str = "assetcare_secret"
+    POSTGRES_HOST: str = "asset_care_db"
     POSTGRES_DB: str = "assetcare_db"
     POSTGRES_PORT: int = 5433
-    DATABASE_URL: str = (
-        "postgresql+psycopg2://assetcare:assetcare_secret@db:5432/assetcare_db"
-    )
+    DATABASE_URL: str | None = None
 
     CORS_ORIGINS: str = "*"
+
+    @model_validator(mode="after")
+    def assemble_database_url(self) -> "Settings":
+        """Build DATABASE_URL from POSTGRES_* fields when not explicitly set."""
+        if not self.DATABASE_URL:
+            self.DATABASE_URL = (
+                f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
+                f"@{self.POSTGRES_HOST}:5432/{self.POSTGRES_DB}"
+            )
+        return self
 
     @property
     def cors_origins_list(self) -> list[str]:
