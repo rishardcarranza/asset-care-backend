@@ -56,6 +56,9 @@ jobs:
     name: Deploy to Hostinger VPS
     needs: build-and-push
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
 
     steps:
       - name: Checkout repository
@@ -69,23 +72,22 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
           source: "docker-compose.prod.yml"
-          target: ${{ secrets.VPS_DEPLOY_PATH }}
+          target: /opt/maintenance
 
       - name: Pull image and restart services via SSH
         uses: appleboy/ssh-action@v1.0.3
         env:
-          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GHCR_ACTOR: ${{ github.actor }}
-          DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
-          envs: GHCR_TOKEN,GHCR_ACTOR,DEPLOY_PATH
+          envs: GHCR_TOKEN,GHCR_ACTOR
           script: |
             set -e
-            cd "$DEPLOY_PATH"
+            cd /opt/maintenance
             echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_ACTOR" --password-stdin
             docker compose -f docker-compose.prod.yml pull api
             docker compose -f docker-compose.prod.yml up -d --remove-orphans

@@ -1,0 +1,25 @@
+# Git & CI
+.git
+.gitignore
+.github
+
+# Virtual environments & caches
+.venv
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+
+# Environment variables & secrets (never bake into image)
+.env
+.env.*
+!.env.example
+
+# Development & test files
+tests/
+docker-compose*.yml
+Dockerfile*
+README.md
+AGENTS.md
+
