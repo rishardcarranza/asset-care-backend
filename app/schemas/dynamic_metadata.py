@@ -7,18 +7,18 @@ from app.schemas.enums import AssetType
 
 
 class BaseAssetMetadata(BaseModel):
-    """Shared base metadata fields supported across all asset categories."""
+    """Shared optional metadata attributes across all physical asset categories."""
 
     model_config = ConfigDict(extra="ignore")
 
     image_uri: str | None = Field(
         default=None,
-        description="Relative filename or URI of the asset photo",
+        description="Filename or URI of the asset photo",
     )
     usage_hours: float | None = Field(
         default=None,
         ge=0.0,
-        description="Total operating hours if tracked",
+        description="Cumulative operating hours for usage-based maintenance",
     )
 
 
@@ -37,8 +37,8 @@ class VehicleMetadata(BaseAssetMetadata):
         pattern="^(km|mi)$",
         description="Distance measurement unit",
     )
-    vin: str | None = Field(default=None, description="Vehicle Identification Number")
     license_plate: str | None = Field(default=None, description="Vehicle license plate")
+    vin: str | None = Field(default=None, description="Vehicle Identification Number")
     transmission: str | None = Field(default=None, description="Manual or Automatic")
 
 
@@ -76,8 +76,8 @@ class MotorcycleMetadata(BaseAssetMetadata):
         pattern="^(km|mi)$",
         description="Distance measurement unit",
     )
-    vin: str | None = Field(default=None, description="Vehicle Identification Number")
     license_plate: str | None = Field(default=None, description="Motorcycle license plate")
+    vin: str | None = Field(default=None, description="Vehicle Identification Number")
     transmission: str | None = Field(
         default=None, description="Transmission type (e.g. 6-speed, Automatic)"
     )
