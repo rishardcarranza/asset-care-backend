@@ -41,3 +41,6 @@ Maintain strict separation of concerns across modules:
 - **Intent-Driven Docstrings:** Explain the *why*, not just the *what*, especially in complex query filters, JSONB queries, and scheduling logic.
 - **File Size Constraint:** Keep files modular. Refactor and decompose any file exceeding 200 lines.
 - **Language:** Code identifiers, docstrings, technical comments, and git commit messages must be written in technical English.
+- **Git & Branching Policy (STRICT):**
+  - Always develop on the `develop` branch.
+  - **NEVER** run `git commit`, `git push`, or `git merge`, and **NEVER** switch to or push to `main`. All Git commits, pushes, and merges from `develop` to `main` are performed exclusively and manually by the user.
