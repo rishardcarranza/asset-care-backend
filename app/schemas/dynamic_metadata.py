@@ -6,10 +6,24 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.schemas.enums import AssetType
 
 
-class VehicleMetadata(BaseModel):
-    """Metadata schema for vehicles (cars, motorcycles, trucks)."""
+class BaseAssetMetadata(BaseModel):
+    """Shared base metadata fields supported across all asset categories."""
 
     model_config = ConfigDict(extra="ignore")
+
+    image_uri: str | None = Field(
+        default=None,
+        description="Relative filename or URI of the asset photo",
+    )
+    usage_hours: float | None = Field(
+        default=None,
+        ge=0.0,
+        description="Total operating hours if tracked",
+    )
+
+
+class VehicleMetadata(BaseAssetMetadata):
+    """Metadata schema for vehicles (cars, motorcycles, trucks)."""
 
     engine: str | None = Field(default=None, description="Engine model or displacement")
     oil_type: str | None = Field(default=None, description="Recommended motor oil grade")
@@ -24,13 +38,12 @@ class VehicleMetadata(BaseModel):
         description="Distance measurement unit",
     )
     vin: str | None = Field(default=None, description="Vehicle Identification Number")
+    license_plate: str | None = Field(default=None, description="Vehicle license plate")
     transmission: str | None = Field(default=None, description="Manual or Automatic")
 
 
-class MotorcycleMetadata(BaseModel):
+class MotorcycleMetadata(BaseAssetMetadata):
     """Metadata schema for motorcycles, scooters, and mopeds."""
-
-    model_config = ConfigDict(extra="ignore")
 
     displacement_cc: int | None = Field(
         default=None,
@@ -64,15 +77,14 @@ class MotorcycleMetadata(BaseModel):
         description="Distance measurement unit",
     )
     vin: str | None = Field(default=None, description="Vehicle Identification Number")
+    license_plate: str | None = Field(default=None, description="Motorcycle license plate")
     transmission: str | None = Field(
         default=None, description="Transmission type (e.g. 6-speed, Automatic)"
     )
 
 
-class HVACMetadata(BaseModel):
+class HVACMetadata(BaseAssetMetadata):
     """Metadata schema for heating, ventilation, and air conditioning."""
-
-    model_config = ConfigDict(extra="ignore")
 
     btu: int | None = Field(default=None, gt=0, description="Cooling capacity in BTU/h")
     refrigerant: str | None = Field(default=None, description="Refrigerant gas type")
@@ -82,10 +94,8 @@ class HVACMetadata(BaseModel):
     )
 
 
-class ApplianceMetadata(BaseModel):
+class ApplianceMetadata(BaseAssetMetadata):
     """Metadata schema for home/commercial appliances."""
-
-    model_config = ConfigDict(extra="ignore")
 
     brand: str | None = Field(default=None, description="Manufacturer brand name")
     model_number: str | None = Field(default=None, description="Specific model number")
@@ -96,7 +106,7 @@ class ApplianceMetadata(BaseModel):
     )
 
 
-class OtherMetadata(BaseModel):
+class OtherMetadata(BaseAssetMetadata):
     """Metadata schema for uncategorized assets."""
 
     model_config = ConfigDict(extra="allow")
